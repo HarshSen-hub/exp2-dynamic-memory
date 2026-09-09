@@ -1,0 +1,17 @@
+Stage 1 (malloc):
+  Pointer value   : 0x503000000040
+  Allocated size  : 20 bytes (5 ints)
+  Initialised values: 1 2 3 4 5 
+
+Stage 2 (realloc):
+  Pointer value   : 0x504000000010
+  Allocated size  : 40 bytes (10 ints)
+  Values after realloc: 1 2 3 4 5 60 70 80 90 100 
+
+Stage 3 (free):
+  Pointer value freed : 0x504000000010
+  Pointer value after setting to NULL: (nil)
+  Memory safely returned to heap allocator.
+
+Pointer is NULL - use-after-free is now impossible via this variable.
+EXIT: 0

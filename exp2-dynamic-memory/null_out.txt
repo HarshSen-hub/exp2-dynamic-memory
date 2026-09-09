@@ -1,0 +1,18 @@
+==499==WARNING: AddressSanitizer failed to allocate 0xfffffffffffffffc bytes
+Requested elements : 9223372036854775807
+Pointer value      : (nil)
+Writing to arr[0]...
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==499==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x556aa15a237d bp 0x7ffd76239580 sp 0x7ffd76239570 T0)
+==499==The signal is caused by a WRITE memory access.
+==499==Hint: address points to the zero page.
+    #0 0x556aa15a237d in main /home/claude/exp2/buggy_null.c:28
+    #1 0x7f727502a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #2 0x7f727502a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x556aa15a21a4 in _start (/home/claude/exp2/buggy_null+0x11a4) (BuildId: d43815ae0c1ec9f284d492139135c1beaf421bcd)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /home/claude/exp2/buggy_null.c:28 in main
+==499==ABORTING
+EXIT: 1

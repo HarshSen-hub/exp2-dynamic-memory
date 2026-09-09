@@ -1,0 +1,71 @@
+Stage 1 (malloc):
+  Pointer value  : 0x503000000040
+  Allocated size : 20 bytes (5 ints)
+
+Stage 2 (realloc):
+  Pointer value  : 0x504000000010
+  Allocated size : 40 bytes (10 ints)
+
+Stage 3 (free):
+  Pointer value freed : 0x504000000010
+  Memory returned to heap allocator.
+
+Demonstrating use-after-free:
+  Reading arr[0] after free...
+=================================================================
+==521==ERROR: AddressSanitizer: heap-use-after-free on address 0x504000000010 at pc 0x55fbc1e356e5 bp 0x7ffed0b707e0 sp 0x7ffed0b707d0
+READ of size 4 at 0x504000000010 thread T0
+    #0 0x55fbc1e356e4 in main /home/claude/exp2/buggy_uaf.c:54
+    #1 0x7f813122a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #2 0x7f813122a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x55fbc1e35224 in _start (/home/claude/exp2/buggy_uaf+0x1224) (BuildId: a2d43286deb893f1a2ffafc22bad909d6312c2ec)
+
+0x504000000010 is located 0 bytes inside of 40-byte region [0x504000000010,0x504000000038)
+freed by thread T0 here:
+    #0 0x7f81316fc4d8 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0x55fbc1e355f0 in main /home/claude/exp2/buggy_uaf.c:44
+    #2 0x7f813122a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x7f813122a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #4 0x55fbc1e35224 in _start (/home/claude/exp2/buggy_uaf+0x1224) (BuildId: a2d43286deb893f1a2ffafc22bad909d6312c2ec)
+
+previously allocated by thread T0 here:
+    #0 0x7f81316fc778 in realloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:85
+    #1 0x55fbc1e3547b in main /home/claude/exp2/buggy_uaf.c:29
+    #2 0x7f813122a1c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #3 0x7f813122a28a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: 8e9fd827446c24067541ac5390e6f527fb5947bb)
+    #4 0x55fbc1e35224 in _start (/home/claude/exp2/buggy_uaf+0x1224) (BuildId: a2d43286deb893f1a2ffafc22bad909d6312c2ec)
+
+SUMMARY: AddressSanitizer: heap-use-after-free /home/claude/exp2/buggy_uaf.c:54 in main
+Shadow bytes around the buggy address:
+  0x503ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x503ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x503ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x503fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x503fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x504000000000: fa fa[fd]fd fd fd fd fa fa fa fa fa fa fa fa fa
+  0x504000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x504000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x504000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x504000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x504000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==521==ABORTING
+EXIT: 1
